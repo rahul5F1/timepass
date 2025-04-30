@@ -1,58 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
-  />
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-  <title>Login Page | Caged Coder</title>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+ <title>Login Page</title>
 </head>
-
 <body>
-  <div class="container" id="container">
-    <div class="form-container sign-up">
-      <form id="registerForm" method="POST" action="/register" onsubmit="return validateRegistrationForm()">
-        <h1>Create Account</h1>
-        <input type="text" name="name" placeholder="Name" required />
-        <input type="email" name="email" placeholder="Email" required />
-        <input type="password" id="reg_password" name="password" placeholder="Password" required />
-        <input type="password" id="reg_confirm_password" name="confirm_password" placeholder="Confirm Password" required />
-        <div id="regError" style="color: red; display: none;">Passwords do not match!</div>
-        <button type="submit">Sign Up</button>
-      </form>
-    </div>
+ <div class="container" id="container">
 
-    <div class="form-container sign-in">
-      <form method="POST" action="/login">
-        <h1>Sign In</h1>
-        <input type="email" name="email" placeholder="Email" required />
-        <input type="password" name="password" placeholder="Password" required />
-        <button type="submit">Sign In</button>
-      </form>
-    </div>
+   <!-- Sign Up Form -->
+   <div class="form-container sign-up">
+     <form method="POST" action="/register" onsubmit="return validateRegistrationForm()">
+       <h1>Create Account</h1>
+       <input type="text" name="name" placeholder="Name" required />
+       <input type="email" name="email" placeholder="Email" required />
+       <input type="password" id="reg_password" name="password" placeholder="Password" required />
+       <input type="password" id="reg_confirm_password" name="confirm_password" placeholder="Confirm Password" required />
+       
+       <select name="security_question" required>
+         <option value="">--select the secret question--</option>
+         <option value="What is your high school name?">What is your high school name?</option>
+         <option value="Which is your favourite color?">Which is your favourite color?</option>
+         <option value="What is your pet name?">What is your pet name?</option>
+         <option value="Who is your favourite actor/actress?">Who is your favourite actor/actress?</option>
+       </select>
+       <input type="text" name="security_answer" placeholder="Answer" required />
 
-    <div class="toggle-container">
-      <div class="toggle">
-        <div class="toggle-panel toggle-left">
-          <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo-image" />
-          <h1>Welcome Back!</h1>
-          <p>Enter your personal details to use all of site features</p>
-          <button class="hidden" id="login">Sign In</button>
-        </div>
-        <div class="toggle-panel toggle-right">
-          <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo-image" />
-          <h1>Hello, Friend!</h1>
-          <p>
-            Register with your personal details to use all of site features
-          </p>
-          <button class="hidden" id="register">Sign Up</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <script src="{{ url_for('static',filename='script.js') }}"></script>
+       <div id="regError" class="error-message">Passwords do not match!</div>
+       <button type="submit">Sign Up</button>
+     </form>
+   </div>
+
+   <!-- Sign In Form -->
+   <div class="form-container sign-in">
+     <form method="POST" action="/login">
+       <h1>Sign In</h1>
+       <input type="email" name="email" placeholder="Email" required />
+       <input type="password" name="password" placeholder="Password" required />
+       <a href="index.html" id="forgotPasswordLink">Forget your password?</a>
+        <!-- <button id="forgotPasswordLink">Forget your password?</button> -->
+       <button type="submit">Sign In</button>
+     </form>
+   </div>
+
+   <!-- Toggle UI -->
+   <div class="toggle-container">
+     <div class="toggle">
+       <div class="toggle-panel toggle-left">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo-image" />
+         <h1>Welcome Back!</h1>
+         <p>Enter your personal details to use all site features</p>
+         <button class="hidden" id="login">Sign In</button>
+       </div>
+       <div class="toggle-panel toggle-right">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo-image" />
+         <h1>Hello, Friend!</h1>
+         <p>Register with your details to use all site features</p>
+         <button class="hidden" id="register">Sign Up</button>
+       </div>
+     </div>
+   </div>
+ </div>
+
+ <!-- Password Reset Popup -->
+ <div id="resetPopup" class="popup-overlay">
+   <div class="popup">
+     <h2>Reset Password</h2>
+     <button id="crossPopup" onclick="closeResetPass()">X</button>
+     <form id="resetForm" onsubmit="return handleReset(event)">
+       <input type="email" id="reset_email" placeholder="Registered Email" name="email" required />
+       <select id="reset_question" name="security_question" required>
+         <option value="">--select the secret question--</option>
+         <option value="What is your high school name?">What is your high school name?</option>
+         <option value="Which is your favourite color?">Which is your favourite color?</option>
+         <option value="What is your pet name?">What is your pet name?</option>
+         <option value="Who is your favourite actor/actress?">Who is your favourite actor/actress?</option>
+       </select>
+       <input type="text" id="reset_answer" placeholder="Answer" name="security_answer" required />
+
+       <div id="passwordFields" style="display:none;">
+         <input type="password" id="new_password" name="new_password" placeholder="New Password"/>
+         <input type="password" id="confirm_new_password" name="confirm_password"  placeholder="Confirm Password" />
+       </div>
+
+       <div class="error-message" id="resetError"></div>
+       <button type="submit">Submit</button>
+       <button type="button" onclick="closeResetPopup()">Cancel</button>
+     </form>
+   </div>
+ </div>
+
+ <!-- <script src="{{ url_for('static',filename='script.js') }}"></script> -->
+  <script src="../static/script.js"></script>
 </body>
 </html>
